@@ -25,6 +25,30 @@ import tkinter as tk
 from tkinter import filedialog, ttk
 
 
+def patch_pyav_compat() -> None:
+    """faster-whisper 1.x calls av.open(..., metadata_errors="ignore"), but PyAV 19+ removed this argument.
+    Ignore the unsupported keyword so the same code keeps working on modern system Python.
+    """
+    try:
+        import av
+    except Exception:
+        return
+
+    if getattr(av.open, "__name__", "") == "_compat_open":
+        return
+
+    original_open = av.open
+
+    def _compat_open(*args, **kwargs):
+        kwargs.pop("metadata_errors", None)
+        return original_open(*args, **kwargs)
+
+    av.open = _compat_open
+
+
+patch_pyav_compat()
+
+
 def load_env_file(env_path: Path | None = None) -> None:
     """ローカルの .env を読み込み、未設定の環境変数だけ反映する。"""
     path = env_path or Path(__file__).resolve().with_name(".env")

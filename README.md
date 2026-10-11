@@ -20,6 +20,8 @@ Python で音声ファイルを文字起こしし、字幕ファイルとして�
 python -m pip install faster-whisper ctranslate2
 ```
 
+> このスクリプトには PyAV 19 系向けの互換補正を入れているため、仮想環境を作らずに既存のシステム Python でも動作します。
+
 ## 実行方法
 
 ### GUI で起動
